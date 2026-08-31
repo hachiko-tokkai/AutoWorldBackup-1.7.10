@@ -1,0 +1,15 @@
+[
+  {
+    "modid": "autoworldbackup",
+    "name": "Auto World Backup",
+    "description": "Server-side automatic world backups for Minecraft Forge 1.7.10.",
+    "version": "1.0.0",
+    "mcversion": "1.7.10",
+    "url": "",
+    "authorList": ["tomos"],
+    "credits": "",
+    "logoFile": "",
+    "screenshots": [],
+    "dependencies": []
+  }
+]
