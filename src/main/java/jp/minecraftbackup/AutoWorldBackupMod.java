@@ -21,6 +21,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -45,7 +46,7 @@ import java.util.zip.ZipOutputStream;
 public final class AutoWorldBackupMod {
     public static final String MOD_ID = "autoworldbackup";
     public static final String MOD_NAME = "Auto World Backup";
-    public static final String VERSION = "1.0.0";
+    public static final String VERSION = "1.0.1";
 
     @Mod.Instance(MOD_ID)
     public static AutoWorldBackupMod instance;
@@ -242,7 +243,8 @@ public final class AutoWorldBackupMod {
 
     private void addToZip(File file, String entryName, ZipOutputStream zip) throws IOException {
         if (Thread.currentThread().isInterrupted()) throw new IOException("バックアップが中断されました");
-        if (file.getName().equals("session.lock") || Files.isSymbolicLink(file.toPath())) return;
+        if (file.getName().equals("session.lock") || isTemporaryFile(file)
+                || Files.isSymbolicLink(file.toPath())) return;
         if (file.isDirectory()) {
             zip.putNextEntry(new ZipEntry(entryName.replace('\\', '/') + "/"));
             zip.closeEntry();
@@ -255,18 +257,31 @@ public final class AutoWorldBackupMod {
             for (File child : children) addToZip(child, entryName + "/" + child.getName(), zip);
             return;
         }
-        ZipEntry entry = new ZipEntry(entryName.replace('\\', '/'));
-        entry.setTime(file.lastModified());
-        zip.putNextEntry(entry);
-        BufferedInputStream input = new BufferedInputStream(new FileInputStream(file));
+        BufferedInputStream input;
         try {
-            byte[] buffer = new byte[64 * 1024];
-            int read;
-            while ((read = input.read(buffer)) != -1) zip.write(buffer, 0, read);
+            input = new BufferedInputStream(new FileInputStream(file));
+        } catch (FileNotFoundException error) {
+            if (isTemporaryFile(file)) return;
+            throw error;
+        }
+        try {
+            ZipEntry entry = new ZipEntry(entryName.replace('\\', '/'));
+            entry.setTime(file.lastModified());
+            zip.putNextEntry(entry);
+            try {
+                byte[] buffer = new byte[64 * 1024];
+                int read;
+                while ((read = input.read(buffer)) != -1) zip.write(buffer, 0, read);
+            } finally {
+                zip.closeEntry();
+            }
         } finally {
             input.close();
-            zip.closeEntry();
         }
+    }
+
+    private static boolean isTemporaryFile(File file) {
+        return file.getName().toLowerCase().endsWith(".tmp");
     }
 
     private static void moveCompleted(File part, File destination) throws IOException {

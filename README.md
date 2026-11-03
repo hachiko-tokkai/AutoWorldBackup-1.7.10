@@ -88,7 +88,7 @@ Java 8を使用し、リポジトリのルートで実行します。
 .\gradlew.bat build
 ```
 
-生成先は`build/libs/AutoWorldBackup-1.0.0.jar`です。
+生成先は`build/libs/AutoWorldBackup-1.0.1.jar`です。
 
 ## 生成AIの利用
 

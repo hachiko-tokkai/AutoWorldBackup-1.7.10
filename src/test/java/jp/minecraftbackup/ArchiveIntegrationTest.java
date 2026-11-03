@@ -21,6 +21,8 @@ public final class ArchiveIntegrationTest {
         Files.write(new File(region, "r.0.0.mca").toPath(), new byte[] {1, 2, 3});
         Files.write(new File(world, "level.dat").toPath(), new byte[] {4, 5});
         Files.write(new File(world, "session.lock").toPath(), new byte[] {6});
+        Files.write(new File(world, ".level.dat-5981180508269795549.tmp").toPath(), new byte[] {7});
+        Files.write(new File(region, "mod-save.tmp").toPath(), new byte[] {8});
 
         AutoWorldBackupMod mod = new AutoWorldBackupMod();
         Method createZip = AutoWorldBackupMod.class.getDeclaredMethod("createZip", File.class, File.class);
@@ -45,6 +47,9 @@ public final class ArchiveIntegrationTest {
         assertTrue(entries.contains("world/level.dat"), "level.dat is missing");
         assertTrue(entries.contains("world/region/r.0.0.mca"), "region file is missing");
         assertTrue(!entries.contains("world/session.lock"), "session.lock must be excluded");
+        assertTrue(!entries.contains("world/.level.dat-5981180508269795549.tmp"),
+                "temporary level file must be excluded");
+        assertTrue(!entries.contains("world/region/mod-save.tmp"), "temporary mod file must be excluded");
 
         Files.write(new File(backups, "world-backup-20200101-000000.zip").toPath(), new byte[] {1});
         Files.write(new File(backups, "world-backup-20200101-000001.zip").toPath(), new byte[] {1});

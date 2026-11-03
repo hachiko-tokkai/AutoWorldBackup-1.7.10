@@ -1,6 +1,11 @@
-# Auto World Backup v1.0.0
+# Auto World Backup v1.0.1
 
-Minecraft Forge 1.7.10専用サーバー向けの初回公開版です。
+Minecraft Forge 1.7.10専用サーバー向けの不具合修正版です。
+
+## 修正
+
+- Dimension保存中に生成される `.level.dat-*.tmp` などの一時ファイルをバックアップ対象外にしました。
+- ファイル一覧取得後に一時ファイルが削除され、バックアップ全体が失敗する問題を修正しました。
 
 ## 主な機能
 
